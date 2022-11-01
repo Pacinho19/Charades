@@ -59,7 +59,7 @@
 
             function updatePlayers(startGame) {
                 var gameId = document.getElementById('gameId').value;
-                $.post("/charades/games/" + gameId + "/players").done(function (fragment) {
+                $.post("/charades/games/" + gameId + "/room/players").done(function (fragment) {
                     $("#players").replaceWith(fragment);
                 });
                 console.log('StartGame : ' + startGame);
@@ -74,6 +74,7 @@
                 var downloadTimer = setInterval(function(){
                   if(timeleft <= 0){
                     clearInterval(downloadTimer);
+                    window.location.href = '/charades/games/'+ document.getElementById('gameId').value;
                   }
                   document.getElementById("progressBar").value = 10 - timeleft;
                   timeleft -= 1;

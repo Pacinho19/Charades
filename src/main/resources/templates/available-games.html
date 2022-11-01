@@ -20,12 +20,12 @@
                 <td><span th:text="${game.id}"> </span></td>
                 <td><span th:text="${game.startTime}"> </span></td>
                 <td th:if="${game.status.name=='NEW'}">
-                    <form th:action="@{'/charades/games/' + ${game.id}}" th:method="get">
+                    <form th:action="@{'/charades/games/' + ${game.id} + '/room'}" th:method="get">
                         <button type="submit" class="btn btn-primary"><i class="bi bi-plus"></i></button>
                     </form>
                 </td>
                 <td th:if="${game.status.name=='IN_PROGRESS'}">
-                    <form th:action="@{'/charades/games/' + ${game.id}}" th:method="get">
+                    <form th:action="@{'/charades/games/' + ${game.id} + '/room'}" th:method="get">
                         <button type="submit" class="btn btn-primary"><i class="bi bi-eye"></i></button>
                     </form>
                 </td>

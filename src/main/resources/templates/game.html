@@ -31,7 +31,7 @@
                     privateStompClient.subscribe('/game/' + gameId, function(result) {
 
                     });
-                });
+            });
 
             stompClient = Stomp.over(socket);
 
@@ -84,10 +84,6 @@
 
     </div>
     <div class="col-md-2">
-        <div class="alert alert-success" id="join-player-alert">
-            <button type="button" class="close" data-dismiss="alert">x</button>
-            <strong id="playerJoinName"> </strong>
-        </div>
     </div>
 </div>
 </body>

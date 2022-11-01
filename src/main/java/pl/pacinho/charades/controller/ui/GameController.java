@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import pl.pacinho.charades.config.UIConfig;
 import pl.pacinho.charades.model.GameDto;
+import pl.pacinho.charades.model.enums.GameStatus;
 import pl.pacinho.charades.service.GameService;
 
 @RequiredArgsConstructor
@@ -31,17 +32,19 @@ public class GameController {
     @PostMapping(UIConfig.NEW_GAME)
     public String newGame(Model model, Authentication authentication) {
         try {
-            return "redirect:" + UIConfig.GAMES + "/" + gameService.newGame(authentication.getName());
+            return "redirect:" + UIConfig.GAMES + "/" + gameService.newGame(authentication.getName()) + "/room";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return gameHome(model);
         }
     }
 
-    @GetMapping(UIConfig.GAME_PAGE)
-    public String gamePage(@PathVariable(value = "gameId") String gameId, Model model, Authentication authentication) {
+    @GetMapping(UIConfig.GAME_ROOM)
+    public String gameRoom(@PathVariable(value = "gameId") String gameId, Model model, Authentication authentication) {
         try {
             GameDto game = gameService.findById(gameId);
+            if (game.getStatus() == GameStatus.IN_PROGRESS) return "redirect:" + UIConfig.GAMES + "/" + gameId;
+
             model.addAttribute("game", game);
             model.addAttribute("joinGame", gameService.canJoin(game, authentication.getName()));
         } catch (Exception e) {
@@ -49,6 +52,21 @@ public class GameController {
             return gameHome(model);
         }
         return "game-room";
+    }
+
+    @GetMapping(UIConfig.GAME_PAGE)
+    public String gamePage(@PathVariable(value = "gameId") String gameId, Model model, Authentication authentication) {
+        try {
+            GameDto game = gameService.findById(gameId);
+            if(game.getStatus()!=GameStatus.IN_PROGRESS)
+                throw new IllegalStateException("Game "+gameId+ " not started !");
+
+            model.addAttribute("game", game);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return gameHome(model);
+        }
+        return "game";
     }
 
     @PostMapping(UIConfig.PLAYERS)
