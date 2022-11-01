@@ -57,7 +57,18 @@
                 window.location.href = '/charades'
             };
 
-            function startGame(){
+            function updatePlayers(startGame) {
+                var gameId = document.getElementById('gameId').value;
+                $.post("/charades/games/" + gameId + "/players").done(function (fragment) {
+                    $("#players").replaceWith(fragment);
+                });
+                console.log('StartGame : ' + startGame);
+                if(startGame){
+                    loadingGame();
+                }
+            };
+
+            function loadingGame(){
                 document.getElementById("startGameDiv").style.display = 'block';
                 var timeleft = 10;
                 var downloadTimer = setInterval(function(){
@@ -66,18 +77,9 @@
                   }
                   document.getElementById("progressBar").value = 10 - timeleft;
                   timeleft -= 1;
-                    document.getElementById("myBar").innerHTML = 10-timeleft;
+                    document.getElementById("myBar").innerHTML = 10 - timeleft;
                 }, 1000);
             }
-
-            function updatePlayers(startGame) {
-                var gameId = document.getElementById('gameId').value;
-                $.post("/charades/games/" + gameId + "/players").done(function (fragment) {
-                    $("#players").replaceWith(fragment);
-                });
-
-                if(startGame) startGame();
-            };
 
     </script>
 
@@ -125,7 +127,7 @@
 
     </div>
     <div class="col-md-2">
-        <div class="alert alert-success" id="join-player-alert">
+        <div class="alert alert-success" id="join-player-alert" style="display:none">
             <button type="button" class="close" data-dismiss="alert">x</button>
             <strong id="playerJoinName"> </strong>
         </div>
