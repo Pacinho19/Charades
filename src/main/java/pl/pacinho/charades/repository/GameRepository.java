@@ -8,10 +8,7 @@ import pl.pacinho.charades.model.enums.GameStatus;
 import pl.pacinho.charades.service.WordDefinitionService;
 import pl.pacinho.charades.service.WordService;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class GameRepository {
@@ -30,9 +27,17 @@ public class GameRepository {
 
     public String newGame(String playerName) {
         GameDto game = new GameDto(playerName);
-        String word = wordService.getRandomWord();
+        List<String> definition = new ArrayList<>();
+        String word = "";
+        while (definition.isEmpty()) {
+            word = wordService.getRandomWord();
+            definition = wordDefinitionService.getDefinition(word);
+        }
+
+        System.out.println("=========" + word + "=========");
+
         game.setWordLetters(wordService.getWordLetters(word));
-        game.setDefinition(wordDefinitionService.getDefinition(word));
+        game.setDefinition(definition);
         gameMap.put(game.getId(), game);
         wordMap.put(game.getId(), word);
         return game.getId();

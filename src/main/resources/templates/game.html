@@ -37,10 +37,13 @@
                         divA.class = "row";
                         var guessLabel = document.createElement("h3");
                         guessLabel.innerHTML = guessJson.text;
+                        if(guessJson.correct) guessLabel.style = 'color:green';
 
                         divA.appendChild(guessLabel);
                         guessedWordsDiv.appendChild(divA);
                         guessedWordsDiv.scrollTop = guessedWordsDiv.scrollHeight;
+
+                        checkEndGame(guessJson.correct);
                     });
             });
 
@@ -73,6 +76,24 @@
                   $("#error-alert").slideUp(500);
                 });
             };
+
+            function checkEndGame(endGame){
+                if(endGame){
+                    var guessForm = document.getElementById('guessForm');
+                    if(guessForm!=null) guessForm.remove();
+                    document.getElementById('lettersDiv').remove();
+                }
+            }
+
+            $(document).ready(function() {
+              $(window).keydown(function(event){
+                if(event.keyCode == 13) {
+                  event.preventDefault();
+                  guess();
+                  return false;
+                }
+              });
+            });
     </script>
 
     <style>
@@ -101,7 +122,7 @@
 
         <input type="hidden" id="gameId" th:value="${game.id}">
 
-        <div style="display: flex;justify-content: center;margin-top:1%;">
+        <div style="display: flex;justify-content: center;margin-top:1%;" id="lettersDiv">
             <table th:if="${game!=null}" style="margin-top:1%;margin: 0 auto;text-align:center"
                    class="center" th:width="${50*game.wordLetters.size + 'px'}">
                 <tr>
@@ -123,7 +144,7 @@
         </th:block>
 
         <hr class="rounded">
-        <form>
+        <form id="guessForm" th:if="${canPlay}">
             <div class="form-group row">
                 <label for="word" class="col-sm-2 col-form-label">Word</label>
                 <div class="col-sm-8">

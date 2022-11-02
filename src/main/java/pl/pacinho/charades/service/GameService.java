@@ -28,8 +28,7 @@ public class GameService {
     }
 
     public GameDto findById(String gameId) {
-        return gameRepository.findById(gameId)
-                .orElseThrow(() -> new GameNotFoundException(gameId));
+        return gameRepository.findById(gameId).orElseThrow(() -> new GameNotFoundException(gameId));
     }
 
     public void joinGame(String name, String gameId) {
@@ -38,21 +37,20 @@ public class GameService {
     }
 
     public boolean checkStartGame(String gameId) {
-        return findById(gameId)
-                       .getPlayers().size() == GameDto.MAX_PLAYERS;
+        return findById(gameId).getPlayers().size() == GameDto.MAX_PLAYERS;
     }
 
     public boolean canJoin(GameDto game, String name) {
-        return game.getPlayers().size() < GameDto.MAX_PLAYERS
-               && game.getPlayers().stream().noneMatch(p -> p.getName().equals(name));
+        return game.getPlayers().size() < GameDto.MAX_PLAYERS && game.getPlayers().stream().noneMatch(p -> p.getName().equals(name));
     }
 
     public GuessOutputDto guess(String gameId, String playerName, String word) {
-        if (word == null)
-            return new GuessOutputDto(getGuessText(playerName, null), false);
+        if (word == null) return new GuessOutputDto(getGuessText(playerName, null), false);
 
-        if (checkWord(gameId, word))
+        if (checkWord(gameId, word)) {
+            findById(gameId).setStatus(GameStatus.FINISHED);
             return new GuessOutputDto(getWinnerText(playerName, word), true);
+        }
 
         return new GuessOutputDto(getGuessText(playerName, word), false);
 
@@ -68,5 +66,11 @@ public class GameService {
 
     private String getGuessText(String playerName, String word) {
         return playerName + " : " + word;
+    }
+
+    public boolean checkPlayGame(String name, GameDto game) {
+        return game.getPlayers()
+                .stream()
+                .anyMatch(p -> p.getName().equals(name));
     }
 }

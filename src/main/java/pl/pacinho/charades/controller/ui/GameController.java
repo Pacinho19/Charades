@@ -62,6 +62,7 @@ public class GameController {
                 throw new IllegalStateException("Game "+gameId+ " not started !");
 
             model.addAttribute("game", game);
+            model.addAttribute("canPlay", gameService.checkPlayGame(authentication.getName(), game));
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return gameHome(model);
