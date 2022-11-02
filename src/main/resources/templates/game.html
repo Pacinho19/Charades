@@ -28,8 +28,19 @@
             privateStompClient = Stomp.over(socket);
             privateStompClient.connect({}, function(frame) {
             var gameId = document.getElementById('gameId').value;
-                    privateStompClient.subscribe('/game/' + gameId, function(result) {
+                    privateStompClient.subscribe('/guess/' + gameId , function(result) {
 
+                        var guessJson = JSON.parse(result.body);
+
+                        var guessedWordsDiv = document.getElementById("guessedWordsDiv");
+                        var divA = document.createElement("div");
+                        divA.class = "row";
+                        var guessLabel = document.createElement("h3");
+                        guessLabel.innerHTML = guessJson.text;
+
+                        divA.appendChild(guessLabel);
+                        guessedWordsDiv.appendChild(divA);
+                        guessedWordsDiv.scrollTop = guessedWordsDiv.scrollHeight;
                     });
             });
 
@@ -39,6 +50,29 @@
                 window.location.href = '/charades'
             };
 
+            function guess(){
+                var gameId = document.getElementById('gameId').value;
+                var wordElement = document.getElementById('word');
+                var word = wordElement.value;
+
+                if(word.length!=wordElement.minLength){
+                     showAlert("Word length must be " + wordElement.minLength);
+                     wordElement.focus();
+                     return false;
+                }
+
+                stompClient.send("/app/guess", {},
+                    JSON.stringify({'gameId':gameId, 'word': word}));
+
+                wordElement.value = '';
+            }
+
+            function showAlert(text){
+                document.getElementById('errorText').innerHTML = text;
+                $("#error-alert").fadeTo(2000, 500).slideUp(500, function() {
+                  $("#error-alert").slideUp(500);
+                });
+            };
     </script>
 
     <style>
@@ -80,7 +114,33 @@
             </table>
         </div>
 
+        <th:block th:if="${game.definition.size>0}">
+            <hr class="rounded">
+            <h2>Hints</h2>
+            <div class="row" th:each="def : ${game.definition}">
+                <span th:text="${def}" style="width:100%;border: none;outline: none;overflow:hidden"/>
+            </div>
+        </th:block>
+
         <hr class="rounded">
+        <form>
+            <div class="form-group row">
+                <label for="word" class="col-sm-2 col-form-label">Word</label>
+                <div class="col-sm-8">
+                    <input type="text" id="word" style="width:100%" th:minLength="${game.wordLetters.size}"
+                           th:maxLength="${game.wordLetters.size}">
+                </div>
+                <button type="button" onclick="guess()" class="btn btn-primary">Guess</button>
+            </div>
+            <div class="row">
+                <div class="alert alert-danger" id="error-alert" style="display:none;width:100%;height:50px;">
+                    <button type="button" class="close" data-dismiss="alert">x</button>
+                    <strong id="errorText"> </strong>
+                </div>
+            </div>
+        </form>
+
+        <div id="guessedWordsDiv" style="overflow: auto;height:300px"></div>
 
     </div>
     <div class="col-md-2">

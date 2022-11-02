@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.pacinho.charades.exception.GameNotFoundException;
 import pl.pacinho.charades.model.GameDto;
+import pl.pacinho.charades.model.GuessOutputDto;
 import pl.pacinho.charades.model.enums.GameStatus;
 import pl.pacinho.charades.repository.GameRepository;
 
@@ -31,13 +32,6 @@ public class GameService {
                 .orElseThrow(() -> new GameNotFoundException(gameId));
     }
 
-    public boolean checkOpenGame(String gameId, String name) {
-        GameDto game = findById(gameId);
-        return game.getPlayers()
-                .stream()
-                .anyMatch(p -> p.getName() != null && p.getName().equals(name));
-    }
-
     public void joinGame(String name, String gameId) {
         GameDto game = gameRepository.joinGame(name, gameId);
         game.setStatus(GameStatus.IN_PROGRESS);
@@ -45,11 +39,34 @@ public class GameService {
 
     public boolean checkStartGame(String gameId) {
         return findById(gameId)
-                .getPlayers().size() == GameDto.MAX_PLAYERS;
+                       .getPlayers().size() == GameDto.MAX_PLAYERS;
     }
 
     public boolean canJoin(GameDto game, String name) {
         return game.getPlayers().size() < GameDto.MAX_PLAYERS
-                && game.getPlayers().stream().noneMatch(p -> p.getName().equals(name));
+               && game.getPlayers().stream().noneMatch(p -> p.getName().equals(name));
+    }
+
+    public GuessOutputDto guess(String gameId, String playerName, String word) {
+        if (word == null)
+            return new GuessOutputDto(getGuessText(playerName, null), false);
+
+        if (checkWord(gameId, word))
+            return new GuessOutputDto(getWinnerText(playerName, word), true);
+
+        return new GuessOutputDto(getGuessText(playerName, word), false);
+
+    }
+
+    private boolean checkWord(String gameId, String word) {
+        return gameRepository.checkWord(gameId, word);
+    }
+
+    private String getWinnerText(String playerName, String word) {
+        return playerName + " win the game ! Correct word: " + word;
+    }
+
+    private String getGuessText(String playerName, String word) {
+        return playerName + " : " + word;
     }
 }

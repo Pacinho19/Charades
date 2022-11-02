@@ -5,8 +5,8 @@ import pl.pacinho.charades.exception.GameNotFoundException;
 import pl.pacinho.charades.model.GameDto;
 import pl.pacinho.charades.model.PlayerDto;
 import pl.pacinho.charades.model.enums.GameStatus;
-import pl.pacinho.charades.service.GameService;
-import pl.pacinho.charades.utils.WordUtils;
+import pl.pacinho.charades.service.WordDefinitionService;
+import pl.pacinho.charades.service.WordService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,18 +16,23 @@ import java.util.Optional;
 @Repository
 public class GameRepository {
 
+    private final WordDefinitionService wordDefinitionService;
+    private final WordService wordService;
     private Map<String, GameDto> gameMap;
     private Map<String, String> wordMap;
 
-    public GameRepository() {
+    public GameRepository(WordDefinitionService wordDefinitionService, WordService wordService) {
+        this.wordDefinitionService = wordDefinitionService;
+        this.wordService = wordService;
         gameMap = new HashMap<>();
         wordMap = new HashMap<>();
     }
 
     public String newGame(String playerName) {
         GameDto game = new GameDto(playerName);
-        String word = WordUtils.randomWord();
-        game.setWordLetters(WordUtils.parseWord(word));
+        String word = wordService.getRandomWord();
+        game.setWordLetters(wordService.getWordLetters(word));
+        game.setDefinition(wordDefinitionService.getDefinition(word));
         gameMap.put(game.getId(), game);
         wordMap.put(game.getId(), word);
         return game.getId();
@@ -60,5 +65,13 @@ public class GameRepository {
 
         game.getPlayers().add(new PlayerDto(name));
         return game;
+    }
+
+    public boolean checkWord(String gameId, String word) {
+        String gameWord = wordMap.get(gameId);
+        if (gameWord == null)
+            throw new GameNotFoundException(gameId);
+
+        return gameWord.equalsIgnoreCase(word);
     }
 }

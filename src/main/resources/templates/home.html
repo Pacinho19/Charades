@@ -23,7 +23,6 @@
 
             function updateAvailableGames() {
                 $.post("/charades/games").done(function (fragment) {
-                    console.log("/charades/games call!");
                     $("#availableGames").replaceWith(fragment);
                 });
             };

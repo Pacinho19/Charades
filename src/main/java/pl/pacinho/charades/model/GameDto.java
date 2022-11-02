@@ -25,6 +25,8 @@ public class GameDto {
     private List<String> winnerCells;
     @Setter
     private List<String> wordLetters;
+    @Setter
+    private List<String> definition;
 
     public GameDto(String player1) {
         players = new LinkedList<>();

@@ -6,9 +6,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import pl.pacinho.charades.model.GameDto;
+import pl.pacinho.charades.model.GuessWordDto;
 import pl.pacinho.charades.model.JoinGameDto;
-import pl.pacinho.charades.model.MoveDto;
+import pl.pacinho.charades.model.GameActionDto;
 import pl.pacinho.charades.service.GameService;
 
 @RequiredArgsConstructor
@@ -18,20 +18,15 @@ public class GameMoveController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final GameService gameService;
 
-    @MessageMapping("/move")
-    public void move(@Payload MoveDto moveDto, Authentication authentication) {
-        simpMessagingTemplate.convertAndSend("/game/" + moveDto.getGameId(), authentication.getName());
-    }
-
     @MessageMapping("/join")
-    public void join(@Payload MoveDto moveDto, Authentication authentication) {
-        gameService.joinGame(authentication.getName(), moveDto.getGameId());
-        simpMessagingTemplate.convertAndSend("/join/" + moveDto.getGameId(),
-                new JoinGameDto(authentication.getName(), gameService.checkStartGame(moveDto.getGameId())));
+    public void join(@Payload GameActionDto gameActionDto, Authentication authentication) {
+        gameService.joinGame(authentication.getName(), gameActionDto.getGameId());
+        simpMessagingTemplate.convertAndSend("/join/" + gameActionDto.getGameId(),
+                new JoinGameDto(authentication.getName(), gameService.checkStartGame(gameActionDto.getGameId())));
     }
 
-    @MessageMapping("/start")
-    public void start(@Payload MoveDto moveDto, Authentication authentication) {
-        simpMessagingTemplate.convertAndSend("/game/" + moveDto.getGameId(), authentication.getName());
+    @MessageMapping("/guess")
+    public void start(@Payload GuessWordDto gameActionDto, Authentication authentication) {
+        simpMessagingTemplate.convertAndSend("/guess/" + gameActionDto.getGameId(), gameService.guess(gameActionDto.getGameId(), authentication.getName(), gameActionDto.getWord()));
     }
 }

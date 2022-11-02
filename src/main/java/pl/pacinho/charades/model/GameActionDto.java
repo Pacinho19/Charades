@@ -3,7 +3,6 @@ package pl.pacinho.charades.model;
 import lombok.Getter;
 
 @Getter
-public class MoveDto {
+public class GameActionDto {
     private String gameId;
-    private String word;
 }
