@@ -76,9 +76,10 @@
                     clearInterval(downloadTimer);
                     window.location.href = '/charades/games/'+ document.getElementById('gameId').value;
                   }
-                  document.getElementById("progressBar").value = 10 - timeleft;
+
+                  var nextPbValue =  10 - timeleft;
+                  document.getElementById("progressBar").value = nextPbValue;
                   timeleft -= 1;
-                    document.getElementById("myBar").innerHTML = 10 - timeleft;
                 }, 1000);
             }
 
@@ -117,13 +118,10 @@
             Join Game
         </button>
 
-        <hr class="rounded">
 
-        <div id="startGameDiv" style="display:none">
+        <div id="startGameDiv" style="display:none;margin-top:1%">
             <h3>All players joined the game. Game loading!</h3>
-            <progress value="0" max="10" id="progressBar" style="text-align:center">
-                <div id="myBar">10</div>
-            </progress>
+            <progress value="0" max="10" id="progressBar" style="text-align:center;height:40px;"></progress>
         </div>
 
     </div>
