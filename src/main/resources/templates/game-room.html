@@ -39,6 +39,7 @@
 
             function joinGame(){
                 var gameId = document.getElementById('gameId').value;
+                document.getElementById('joinGameButton').remove();
                 stompClient.send("/app/join", {}, JSON.stringify({'gameId':gameId}));
             }
 
@@ -114,7 +115,7 @@
 
         <hr class="rounded">
 
-        <button style="width:100%" th:if="${joinGame}" type="button" class="btn btn-primary" onclick="joinGame()">
+        <button style="width:100%" th:if="${joinGame}" type="button" class="btn btn-primary" onclick="joinGame()" id="joinGameButton">
             Join Game
         </button>
 
