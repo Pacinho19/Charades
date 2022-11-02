@@ -54,7 +54,7 @@ public class GameRepository {
         return Optional.ofNullable(gameMap.get(gameId));
     }
 
-    public GameDto joinGame(String name, String gameId) {
+    public GameDto joinGame(String name, String gameId) throws IllegalStateException {
         GameDto game = gameMap.get(gameId);
         if (game == null)
             throw new GameNotFoundException(gameId);

@@ -31,9 +31,9 @@ public class GameService {
         return gameRepository.findById(gameId).orElseThrow(() -> new GameNotFoundException(gameId));
     }
 
-    public void joinGame(String name, String gameId) {
+    public void joinGame(String name, String gameId) throws IllegalStateException {
         GameDto game = gameRepository.joinGame(name, gameId);
-        game.setStatus(GameStatus.IN_PROGRESS);
+        if (game.getPlayers().size() == GameDto.MAX_PLAYERS) game.setStatus(GameStatus.IN_PROGRESS);
     }
 
     public boolean checkStartGame(String gameId) {

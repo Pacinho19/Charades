@@ -20,9 +20,14 @@ public class GameMoveController {
 
     @MessageMapping("/join")
     public void join(@Payload GameActionDto gameActionDto, Authentication authentication) {
-        gameService.joinGame(authentication.getName(), gameActionDto.getGameId());
+        String exception = null;
+        try {
+            gameService.joinGame(authentication.getName(), gameActionDto.getGameId());
+        } catch (Exception ex) {
+            exception = ex.getMessage();
+        }
         simpMessagingTemplate.convertAndSend("/join/" + gameActionDto.getGameId(),
-                new JoinGameDto(authentication.getName(), gameService.checkStartGame(gameActionDto.getGameId())));
+                new JoinGameDto(authentication.getName(), gameService.checkStartGame(gameActionDto.getGameId()), exception));
     }
 
     @MessageMapping("/guess")

@@ -31,15 +31,19 @@
                     privateStompClient.subscribe('/join/' + gameId, function(result) {
                         var joinDto = JSON.parse(result.body);
                         showAlert(joinDto.name + ' joined the game !');
-                        updatePlayers(joinDto.start);
+                        if(joinDto.exception){
+                            showException(joinDto.exception);
+                        }else{
+                            updatePlayers(joinDto.start);
+                        }
                     });
                 });
 
             stompClient = Stomp.over(socket);
 
             function joinGame(){
+                removeJoinButton();
                 var gameId = document.getElementById('gameId').value;
-                document.getElementById('joinGameButton').remove();
                 stompClient.send("/app/join", {}, JSON.stringify({'gameId':gameId}));
             }
 
@@ -63,13 +67,14 @@
                 $.post("/charades/games/" + gameId + "/room/players").done(function (fragment) {
                     $("#players").replaceWith(fragment);
                 });
-                console.log('StartGame : ' + startGame);
                 if(startGame){
                     loadingGame();
                 }
             };
 
             function loadingGame(){
+                removeJoinButton();
+
                 document.getElementById("startGameDiv").style.display = 'block';
                 var timeleft = 5;
                 var downloadTimer = setInterval(function(){
@@ -82,6 +87,18 @@
                   document.getElementById("progressBar").value = nextPbValue;
                   timeleft -= 1;
                 }, 1000);
+            }
+
+            function showException(exceptionMessage) {
+                 document.getElementById('errorText').innerHTML = exceptionMessage;
+                $("#error-alert").fadeTo(2000, 500).slideUp(500, function() {
+                  $("#error-alert").slideUp(500);
+                });
+            }
+
+            function removeJoinButton(){
+                var joinGameButton= document.getElementById('joinGameButton');
+                if(joinGameButton!=null) joinGameButton.remove();
             }
 
     </script>
@@ -119,11 +136,20 @@
             Join Game
         </button>
 
+        <div class="row" id="error-alert" style="display:none;">
+            <hr class="rounded">
+            <div class="alert alert-danger" style="width:100%;height:50px;">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                <strong id="errorText"> </strong>
+            </div>
+        </div>
+
 
         <div id="startGameDiv" style="display:none;margin-top:1%">
             <h3>All players joined the game. Game loading!</h3>
             <progress value="0" max="5" id="progressBar" style="text-align:center;height:40px;"></progress>
         </div>
+
 
     </div>
     <div class="col-md-2">
