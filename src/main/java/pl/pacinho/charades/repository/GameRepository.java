@@ -31,17 +31,19 @@ public class GameRepository {
     public String newGame(String playerName) {
         GameDto game = new GameDto(playerName);
         List<String> definition = new ArrayList<>();
+        List<String> images = new ArrayList<>();
         String word = "";
-        while (definition.isEmpty()) {
+        while (definition.isEmpty() || images.isEmpty()) {
             word = wordService.getRandomWord();
             definition = wordDefinitionService.getDefinition(word);
+            images = imageApiService.getImage(word);
         }
 
         System.out.println("=========" + word + "=========");
 
         game.setWordLetters(wordService.getWordLetters(word));
         game.setDefinition(definition);
-        game.setImages(imageApiService.getImage(word));
+        game.setImages(images);
         gameMap.put(game.getId(), game);
         wordMap.put(game.getId(), word);
         return game.getId();

@@ -76,14 +76,15 @@
                 removeJoinButton();
 
                 document.getElementById("startGameDiv").style.display = 'block';
-                var timeleft = 5;
+                var max = document.getElementById("progressBar").max;
+                var timeleft = max;
                 var downloadTimer = setInterval(function(){
                   if(timeleft <= 0){
                     clearInterval(downloadTimer);
                     window.location.href = '/charades/games/'+ document.getElementById('gameId').value;
                   }
 
-                  var nextPbValue =  5 - timeleft;
+                  var nextPbValue =  max - timeleft;
                   document.getElementById("progressBar").value = nextPbValue;
                   timeleft -= 1;
                 }, 1000);
@@ -147,7 +148,7 @@
 
         <div id="startGameDiv" style="display:none;margin-top:1%">
             <h3>All players joined the game. Game loading!</h3>
-            <progress value="0" max="5" id="progressBar" style="text-align:center;height:40px;"></progress>
+            <progress value="0" max="3" id="progressBar" style="text-align:center;height:40px;"></progress>
         </div>
 
 
