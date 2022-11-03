@@ -22,8 +22,6 @@ public class GameDto {
     @Setter
     private String winnerInfo;
     @Setter
-    private List<String> winnerCells;
-    @Setter
     private List<String> wordLetters;
     @Setter
     private List<String> definition;
