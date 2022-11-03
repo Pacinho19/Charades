@@ -5,6 +5,7 @@ import pl.pacinho.charades.exception.GameNotFoundException;
 import pl.pacinho.charades.model.GameDto;
 import pl.pacinho.charades.model.PlayerDto;
 import pl.pacinho.charades.model.enums.GameStatus;
+import pl.pacinho.charades.service.ImageApiService;
 import pl.pacinho.charades.service.WordDefinitionService;
 import pl.pacinho.charades.service.WordService;
 
@@ -15,12 +16,14 @@ public class GameRepository {
 
     private final WordDefinitionService wordDefinitionService;
     private final WordService wordService;
+    private final ImageApiService imageApiService;
     private Map<String, GameDto> gameMap;
     private Map<String, String> wordMap;
 
-    public GameRepository(WordDefinitionService wordDefinitionService, WordService wordService) {
+    public GameRepository(WordDefinitionService wordDefinitionService, WordService wordService, ImageApiService imageApiService) {
         this.wordDefinitionService = wordDefinitionService;
         this.wordService = wordService;
+        this.imageApiService = imageApiService;
         gameMap = new HashMap<>();
         wordMap = new HashMap<>();
     }
@@ -38,6 +41,7 @@ public class GameRepository {
 
         game.setWordLetters(wordService.getWordLetters(word));
         game.setDefinition(definition);
+        game.setImages(imageApiService.getImage(word));
         gameMap.put(game.getId(), game);
         wordMap.put(game.getId(), word);
         return game.getId();

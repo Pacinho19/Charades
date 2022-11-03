@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Service;
 import pl.pacinho.charades.model.definitions.DefinitionDto;
 import pl.pacinho.charades.model.definitions.WordInfoDto;
+import pl.pacinho.charades.utils.HttpConnectionUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class WordDefinitionService {
     public List<String> getDefinition(String word) {
         try {
             URL url = new URL(API_PATH + word);
-            HttpURLConnection uc = getHttpUrlConnection(url);
+            HttpURLConnection uc = HttpConnectionUtils.getHttpUrlConnection(url);
             if (uc.getResponseCode() != 200) return Collections.emptyList();
             return parseResponse(uc.getInputStream());
         } catch (Exception e) {
@@ -48,24 +49,10 @@ public class WordDefinitionService {
     }
 
     private WordInfoDto getResponse(InputStream inputStream) throws IOException {
-        String json = readInputStream(inputStream);
+        String json = HttpConnectionUtils.readInputStream(inputStream);
         Gson gson = new GsonBuilder().create();
         Type type = new TypeToken<List<WordInfoDto>>() {
         }.getType();
         return ((List<WordInfoDto>) gson.fromJson(json, type)).get(0);
-    }
-
-    private String readInputStream(InputStream inputStream) throws IOException {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")))) {
-            return in.lines()
-                    .collect(Collectors.joining());
-        }
-    }
-
-    private HttpURLConnection getHttpUrlConnection(URL url) throws Exception {
-        HttpURLConnection uc = (HttpURLConnection) url.openConnection();
-        uc.setDoOutput(true);
-        uc.setRequestMethod("GET");
-        return uc;
     }
 }

@@ -94,6 +94,7 @@
                 }
               });
             });
+
     </script>
 
     <style>
@@ -101,6 +102,7 @@
           margin-left: auto;
           margin-right: auto;
         }
+
 
     </style>
 </head>
@@ -133,6 +135,21 @@
                     </td>
                 </tr>
             </table>
+        </div>
+
+        <div id="carouselExampleSlidesOnly" class="carousel slide col-md-12" data-ride="carousel"
+             data-interval="5000" th:if="${game.images.size>0}">
+
+            <hr class="rounded" >
+
+            <div class="carousel-inner">
+                <div class="carousel-item " th:classappend="${rowStat.index==0} ? active : none"
+                     th:each="image, rowStat : ${game.images}">
+                    <div class="d-flex justify-content-center" th:attr="data-slide-to=${rowStat.index}">
+                        <img class="center" th:src="@{${image}}">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <th:block th:if="${game.definition.size>0}">

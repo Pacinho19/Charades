@@ -25,6 +25,8 @@ public class GameDto {
     private List<String> wordLetters;
     @Setter
     private List<String> definition;
+    @Setter
+    private List<String> images;
 
     public GameDto(String player1) {
         players = new LinkedList<>();
