@@ -70,6 +70,22 @@ public class GameController {
         return "game";
     }
 
+    @GetMapping(UIConfig.CANVAS)
+    public String canvasPage(@PathVariable(value = "gameId") String gameId, Model model, Authentication authentication) {
+        try {
+            GameDto game = gameService.findById(gameId);
+            if(game.getStatus()!=GameStatus.IN_PROGRESS)
+                throw new IllegalStateException("Game "+gameId+ " not started !");
+
+            model.addAttribute("game", game);
+            model.addAttribute("canPlay",  gameService.checkOwner(authentication.getName(), game));
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return gameHome(model);
+        }
+        return "canvas-test";
+    }
+
     @PostMapping(UIConfig.PLAYERS)
     public String players(@PathVariable(value = "gameId") String gameId, Model model) {
         GameDto game = gameService.findById(gameId);

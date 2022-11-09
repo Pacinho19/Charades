@@ -73,4 +73,18 @@ public class GameService {
                 .stream()
                 .anyMatch(p -> p.getName().equals(name));
     }
+
+    public boolean checkOwner(String name, GameDto game) {
+        return game.getPlayers().get(0).getName().equals(name);
+    }
+
+    public String getOpponent(String gameId, String name) {
+        GameDto game = findById(gameId);
+        return game.getPlayers()
+                .stream()
+                .filter(p -> !p.getName().equals(name))
+                .findFirst()
+                .get()
+                .getName();
+    }
 }

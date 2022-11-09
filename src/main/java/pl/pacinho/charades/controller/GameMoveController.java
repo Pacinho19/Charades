@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import pl.pacinho.charades.model.CanvasTestDto;
 import pl.pacinho.charades.model.GuessWordDto;
 import pl.pacinho.charades.model.JoinGameDto;
 import pl.pacinho.charades.model.GameActionDto;
@@ -33,5 +34,10 @@ public class GameMoveController {
     @MessageMapping("/guess")
     public void start(@Payload GuessWordDto gameActionDto, Authentication authentication) {
         simpMessagingTemplate.convertAndSend("/guess/" + gameActionDto.getGameId(), gameService.guess(gameActionDto.getGameId(), authentication.getName(), gameActionDto.getWord()));
+    }
+
+    @MessageMapping("/canvas-test")
+    public void start(@Payload CanvasTestDto canvas, Authentication authentication) {
+        simpMessagingTemplate.convertAndSendToUser(gameService.getOpponent(canvas.getGameId(), authentication.getName()), "/game/" + canvas.getGameId(), canvas.getCanvas());
     }
 }
