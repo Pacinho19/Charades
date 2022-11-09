@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import pl.pacinho.charades.config.UIConfig;
 import pl.pacinho.charades.model.GameDto;
 import pl.pacinho.charades.model.enums.GameStatus;
+import pl.pacinho.charades.model.enums.GameType;
 import pl.pacinho.charades.service.GameService;
 
 @RequiredArgsConstructor
@@ -29,10 +30,19 @@ public class GameController {
         return "available-games :: availableGamesFrag";
     }
 
-    @PostMapping(UIConfig.NEW_GAME)
-    public String newGame(Model model, Authentication authentication) {
+    @PostMapping(UIConfig.NEW_GAME_CLASSIC)
+    public String newGameClassic(Model model, Authentication authentication) {
+        return newGame(GameType.CLASSIC, authentication.getName(), model);
+    }
+
+    @PostMapping(UIConfig.NEW_GAME_CANVAS)
+    public String newGameCanvas(Model model, Authentication authentication) {
+        return newGame(GameType.CANVAS, authentication.getName(), model);
+    }
+
+    private String newGame(GameType gameType, String name, Model model) {
         try {
-            return "redirect:" + UIConfig.GAMES + "/" + gameService.newGame(authentication.getName()) + "/room";
+            return "redirect:" + UIConfig.GAMES + "/" + gameService.newGame(name, gameType) + "/room";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return gameHome(model);
@@ -58,32 +68,18 @@ public class GameController {
     public String gamePage(@PathVariable(value = "gameId") String gameId, Model model, Authentication authentication) {
         try {
             GameDto game = gameService.findById(gameId);
-            if(game.getStatus()!=GameStatus.IN_PROGRESS)
-                throw new IllegalStateException("Game "+gameId+ " not started !");
+            if (game.getStatus() != GameStatus.IN_PROGRESS)
+                throw new IllegalStateException("Game " + gameId + " not started !");
 
             model.addAttribute("game", game);
+            model.addAttribute("word", gameService.getWord(authentication.getName(), game));
             model.addAttribute("canPlay", gameService.checkPlayGame(authentication.getName(), game));
+            model.addAttribute("canDraw", gameService.checkOwner(authentication.getName(), game));
+            return game.getType().getGamePage();
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return gameHome(model);
         }
-        return "game";
-    }
-
-    @GetMapping(UIConfig.CANVAS)
-    public String canvasPage(@PathVariable(value = "gameId") String gameId, Model model, Authentication authentication) {
-        try {
-            GameDto game = gameService.findById(gameId);
-            if(game.getStatus()!=GameStatus.IN_PROGRESS)
-                throw new IllegalStateException("Game "+gameId+ " not started !");
-
-            model.addAttribute("game", game);
-            model.addAttribute("canPlay",  gameService.checkOwner(authentication.getName(), game));
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return gameHome(model);
-        }
-        return "canvas-test";
     }
 
     @PostMapping(UIConfig.PLAYERS)

@@ -6,6 +6,7 @@ import pl.pacinho.charades.exception.GameNotFoundException;
 import pl.pacinho.charades.model.GameDto;
 import pl.pacinho.charades.model.GuessOutputDto;
 import pl.pacinho.charades.model.enums.GameStatus;
+import pl.pacinho.charades.model.enums.GameType;
 import pl.pacinho.charades.repository.GameRepository;
 
 import java.util.List;
@@ -20,11 +21,11 @@ public class GameService {
         return gameRepository.getAvailableGames();
     }
 
-    public String newGame(String name) {
+    public String newGame(String name, GameType gameType) {
         List<GameDto> activeGames = getAvailableGames();
         if (activeGames.size() >= 10)
             throw new IllegalStateException("Cannot create new Game! Active game count : " + activeGames.size());
-        return gameRepository.newGame(name);
+        return gameRepository.newGame(name, gameType);
     }
 
     public GameDto findById(String gameId) {
@@ -86,5 +87,10 @@ public class GameService {
                 .findFirst()
                 .get()
                 .getName();
+    }
+
+    public String getWord(String playerName, GameDto game) {
+        if (checkOwner(playerName, game)) return gameRepository.getWord(game.getId());
+        return null;
     }
 }

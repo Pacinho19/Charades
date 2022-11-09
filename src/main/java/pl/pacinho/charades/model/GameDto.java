@@ -3,6 +3,7 @@ package pl.pacinho.charades.model;
 import lombok.Getter;
 import lombok.Setter;
 import pl.pacinho.charades.model.enums.GameStatus;
+import pl.pacinho.charades.model.enums.GameType;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -13,7 +14,6 @@ import java.util.UUID;
 public class GameDto {
 
     public static final int MAX_PLAYERS = 2;
-
     private String id;
     @Setter
     private GameStatus status;
@@ -27,8 +27,10 @@ public class GameDto {
     private List<String> definition;
     @Setter
     private List<String> images;
+    private GameType type;
 
-    public GameDto(String player1) {
+    public GameDto(String player1, GameType type) {
+        this.type = type;
         players = new LinkedList<>();
         players.add(new PlayerDto(player1));
         this.id = UUID.randomUUID().toString();

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Charades Classic Game</title>
+    <title>Charades Canvas Game</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -21,6 +21,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+
+    <script type="text/javascript" th:src="@{/js/canvas.js}"></script>
+    <script type="text/javascript" th:src="@{/js/game-canvas.js}"></script>
     <script type="text/javascript" th:src="@{/js/game-core.js}"></script>
 
     <style>
@@ -28,17 +31,46 @@
             margin-left: auto;
             margin-right: auto;
         }
+
+        img {
+            border: 5px solid #555;
+        }
     </style>
 </head>
 
-<body>
+<body onload="init()">
 
-    <div class="row" style="margin-top:1%">
-        <div class="col-md-2" style="text-align:center">
-            <button type="button" class="btn btn-primary" onclick="home();">Home</button>
+    <input type="hidden" id="gameId" th:value="${game.id}">
+
+    <div th:if="${canDraw}">
+        <div class="row" style="height:50px">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary" onclick="home();"
+                    style="margin-top:2%;margin-left:2%">Home</button>
+            </div>
+            <div class="col-md-8">
+                <h2 style="text-align:center;height:50px" class="center" th:text="${word}">Word</h2>
+            </div>
+            <div class="col-md-2"></div>
         </div>
-        <div class="col-md-8" style="text-align:center">
 
+        <div class="row" style="margin-top:55px" id="canvasDiv">
+            <canvas id="can" width="800" height="400"
+                style="top:55px; left: 0px; right: 0px; bottom: 0px; margin-left: auto; margin-right: auto;position:absolute;border:2px solid"></canvas>
+            <input type="text" id="canvasimg" name="canvasimg" style="display:none">
+        </div>
+
+        <div class="row" style="margin-left:15%;margin-right:15%;margin-top:390px;">
+            <div class="col-md-12">
+                <button class="btn btn-danger" value="clear" id="clr" onclick="erase()" style="width:100%">Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${!canDraw}" class="row" style="text-align:center">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
             <div th:if="${error!=null}" style="text-align:center; margin-top:1%"
                 class="alert alert-danger alert-dismissible">
                 <h4 class="error" th:text="${error}">Error message</h4>
@@ -47,7 +79,9 @@
                 </button>
             </div>
 
-            <input type="hidden" id="gameId" th:value="${game.id}">
+            <div id="imageDiv" style="margin-top:2%"></div>
+
+            <hr class="rounded">
 
             <div style="display: flex;justify-content: center;margin-top:1%;" id="lettersDiv">
                 <table th:if="${game!=null}" style="margin-top:1%;margin: 0 auto;text-align:center" class="center"
@@ -61,31 +95,8 @@
                 </table>
             </div>
 
-            <div id="carouselExampleSlidesOnly" class="carousel slide col-md-12" data-ride="carousel"
-                data-interval="5000" th:if="${game.images.size>0}">
-
-                <hr class="rounded">
-
-                <div class="carousel-inner">
-                    <div class="carousel-item " th:classappend="${rowStat.index==0} ? active : none"
-                        th:each="image, rowStat : ${game.images}">
-                        <div class="d-flex justify-content-center" th:attr="data-slide-to=${rowStat.index}">
-                            <img class="center" th:src="@{${image}}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <th:block th:if="${game.definition.size>0}">
-                <hr class="rounded">
-                <h2>Hints</h2>
-                <div class="row" th:each="def : ${game.definition}">
-                    <span th:text="${def}" style="width:100%;border: none;outline: none;overflow:hidden" />
-                </div>
-            </th:block>
-
-            <hr class="rounded">
             <form id="guessForm" th:if="${canPlay}">
+                <hr class="rounded">
                 <div class="form-group row">
                     <label for="word" class="col-sm-2 col-form-label">Word</label>
                     <div class="col-sm-8">
@@ -102,12 +113,19 @@
                 </div>
             </form>
 
-            <div id="guessedWordsDiv" style="overflow: auto;height:300px"></div>
-
         </div>
-        <div class="col-md-2">
-        </div>
+        <div class="col-md-1"></div>
     </div>
+
+    <div class="row" th:style="${canDraw ? 'margin-top:550' : 'margin-top:1%'}">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <hr class="rounded">
+            <div id="guessedWordsDiv" style="overflow: auto;height:300px"></div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+
 </body>
 
 </html>

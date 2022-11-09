@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class CanvasTestDto {
+public class CanvasDto {
     private String gameId;;
     private String canvas;
 }
