@@ -17,8 +17,10 @@ function init() {
 
 function subscribeCanvas() {
     privateStompClient.connect({}, function (frame) {
+        if(document.getElementById('can')!=null) return;
+        
         var gameId = document.getElementById('gameId').value;
-        privateStompClient.subscribe('/players/game/' + gameId, function (result) {
+        privateStompClient.subscribe('/game/' + gameId, function (result) {
             showImage(result.body);
         });
     });

@@ -38,6 +38,6 @@ public class GameMoveController {
 
     @MessageMapping("/canvas")
     public void start(@Payload CanvasDto canvas, Authentication authentication) {
-        simpMessagingTemplate.convertAndSendToUser(gameService.getOpponent(canvas.getGameId(), authentication.getName()), "/game/" + canvas.getGameId(), canvas.getCanvas());
+        simpMessagingTemplate.convertAndSend("/game/" + canvas.getGameId(), canvas.getCanvas());
     }
 }

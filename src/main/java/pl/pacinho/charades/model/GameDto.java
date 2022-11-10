@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 public class GameDto {
 
-    public static final int MAX_PLAYERS = 2;
+    public static final int MAX_PLAYERS = 3;
     private String id;
     @Setter
     private GameStatus status;
