@@ -88,6 +88,7 @@ function disableCanvas() {
     image.src = dataURL;
 
     document.getElementById('canvasDiv').appendChild(newCanvas);
+    document.getElementById('clr').remove();
 }
 
 $(document).ready(function () {
