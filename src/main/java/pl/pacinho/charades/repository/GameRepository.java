@@ -5,6 +5,7 @@ import pl.pacinho.charades.exception.GameNotFoundException;
 import pl.pacinho.charades.model.GameDto;
 import pl.pacinho.charades.model.PlayerDto;
 import pl.pacinho.charades.model.enums.GameStatus;
+import pl.pacinho.charades.model.enums.GameType;
 import pl.pacinho.charades.service.ImageApiService;
 import pl.pacinho.charades.service.WordDefinitionService;
 import pl.pacinho.charades.service.WordService;
@@ -28,12 +29,12 @@ public class GameRepository {
         wordMap = new HashMap<>();
     }
 
-    public String newGame(String playerName) {
-        GameDto game = new GameDto(playerName);
+    public String newGame(String playerName, GameType gameType) {
+        GameDto game = new GameDto(playerName, gameType);
         List<String> definition = new ArrayList<>();
         List<String> images = new ArrayList<>();
-        String word = "";
-        while (definition.isEmpty() || images.isEmpty()) {
+        String word = gameType == GameType.CANVAS ? wordService.getRandomWord() : "";
+        while (gameType == GameType.CLASSIC && (definition.isEmpty() || images.isEmpty())) {
             word = wordService.getRandomWord();
             definition = wordDefinitionService.getDefinition(word);
             images = imageApiService.getImage(word);
@@ -84,5 +85,9 @@ public class GameRepository {
             throw new GameNotFoundException(gameId);
 
         return gameWord.equalsIgnoreCase(word);
+    }
+
+    public String getWord(String gameId) {
+        return wordMap.get(gameId);
     }
 }
