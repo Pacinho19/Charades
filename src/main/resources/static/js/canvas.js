@@ -8,7 +8,7 @@ var canvas, ctx, flag = false,
 var x = "black",
     y = 2;
 
-function init() {
+function initCanvas() {
     canvas = document.getElementById('can');
     if (canvas == null) return;
 

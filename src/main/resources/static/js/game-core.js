@@ -1,16 +1,21 @@
-var stompClient = null;
-var privateStompClient = null;
-socket = new SockJS('/ws');
-privateStompClient = Stomp.over(socket);
-stompClient = Stomp.over(socket);
+var guessClient = null;
+
+function initGuessClient(){
+    socket = new SockJS('/ws');
+    guessClient = Stomp.over(socket);
+    guessClient.connect({}, function (frame) {
+        subscribeGuess();
+    });
+}
 
 function home() {
     window.location.href = '/charades'
 };
 
-privateStompClient.connect({}, function (frame) {
+function subscribeGuess(){
     var gameId = document.getElementById('gameId').value;
-    privateStompClient.subscribe('/guess/' + gameId, function (result) {
+
+    guessClient.subscribe('/guess/' + gameId, function (result) {
 
         var guessJson = JSON.parse(result.body);
 
@@ -27,7 +32,7 @@ privateStompClient.connect({}, function (frame) {
 
         checkEndGame(guessJson.correct);
     });
-});
+}
 
 function guess() {
     var gameId = document.getElementById('gameId').value;

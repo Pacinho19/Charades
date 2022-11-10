@@ -21,7 +21,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+
     <script type="text/javascript" th:src="@{/js/game-core.js}"></script>
+    <script type="text/javascript" th:src="@{/js/game.js}"></script>
 
     <style>
         .center {
@@ -31,7 +33,7 @@
     </style>
 </head>
 
-<body>
+<body onload="init()">
 
     <div class="row" style="margin-top:1%">
         <div class="col-md-2" style="text-align:center">
