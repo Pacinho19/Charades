@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.pacinho.charades.config.ImageApiConfig;
+import pl.pacinho.charades.model.ImageDto;
 import pl.pacinho.charades.model.WordImageDto;
 import pl.pacinho.charades.utils.HttpConnectionUtils;
 
@@ -19,12 +20,13 @@ import java.util.List;
 @Service
 public class ImageApiService {
 
+    private  final ImageApiConfig imageApiConfig;
     public List<String> getImage(String text) {
         WordImageDto wordInfoDto = getResponse(text);
         if (wordInfoDto == null) return Collections.emptyList();
         return wordInfoDto.getHits()
                 .stream().limit(10)
-                .map(i -> i.getWebformatURL())
+                .map(ImageDto::getWebformatURL)
                 .toList();
     }
 
@@ -47,6 +49,6 @@ public class ImageApiService {
     }
 
     public String getUrl(String word) {
-        return "https://pixabay.com/api/?key=" + ImageApiConfig.API_KEY + "&q=" + word;
+        return "https://pixabay.com/api/?key=" + imageApiConfig.API_KEY + "&q=" + word;
     }
 }
