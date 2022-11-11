@@ -26,6 +26,8 @@
     <script type="text/javascript" th:src="@{/js/game-canvas.js}"></script>
     <script type="text/javascript" th:src="@{/js/game-core.js}"></script>
 
+    <link th:href="@{/styles/game-canvas.css}" rel="stylesheet" />
+
     <style>
         .center {
             margin-left: auto;
@@ -42,88 +44,107 @@
 
     <input type="hidden" id="gameId" th:value="${game.id}">
 
-    <div th:if="${canDraw}">
-        <div class="row" style="height:50px">
-            <div class="col-md-2">
-                <button type="button" class="btn btn-primary" onclick="home();"
-                    style="margin-top:2%;margin-left:2%">Home</button>
+    <div id="page" th:if="${canDraw}">
+        <div class="header">
+            <div class="title">
+                <h3 style="text-align:center;height: 44px;" class="center" th:text="${word}">Word</h3>
             </div>
+        </div>
+        <div class="row" id="content">
+            <p style="text-align:center">Loading Canvas...</p>
+        </div>
+        <div class="footer">
+            <div class="palette-case">
+                <div class="palette-box">
+                    <div class="palette white" onclick="selectColor(this)"></div>
+                </div>
+                <div class="palette-box">
+                    <div class="palette red" onclick="selectColor(this)"></div>
+                </div>
+                <div class="palette-box">
+                    <div class="palette blue" onclick="selectColor(this)"></div>
+                </div>
+                <div class="palette-box">
+                    <div class="palette green" onclick="selectColor(this)"></div>
+                </div>
+                <div class="palette-box">
+                    <div class="palette black" onclick="selectColor(this)"></div>
+                </div>
+                <div class="palette-box">
+                    <div class="palette">
+                        <button class="btn btn-danger" value="clear" id="clr" onclick="erase()">Clear
+                        </button>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${!canDraw}" style="text-align:center">
+
+        <div th:if="${error!=null}" style="text-align:center; margin-top:1%"
+            class="alert alert-danger alert-dismissible">
+            <h4 class="error" th:text="${error}">Error message</h4>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="row">
             <div class="col-md-8">
-                <h2 style="text-align:center;height:50px" class="center" th:text="${word}">Word</h2>
+                <div id="imageDiv" style="margin-top:2%;margin-left: 2%;"></div>
             </div>
-            <div class="col-md-2"></div>
-        </div>
-
-        <div class="row" style="margin-top:55px" id="canvasDiv">
-            <canvas id="can" width="800" height="400"
-                style="top:55px; left: 0px; right: 0px; bottom: 0px; margin-left: auto; margin-right: auto;position:absolute;border:2px solid"></canvas>
-            <input type="text" id="canvasimg" name="canvasimg" style="display:none">
-        </div>
-
-        <div class="row" style="margin-left:15%;margin-right:15%;margin-top:390px;">
-            <div class="col-md-12">
-                <button class="btn btn-danger" value="clear" id="clr" onclick="erase()" style="width:100%">Clear
-                </button>
+            <div class="col-md-4" style="text-align:center;">
+                <div id="guessedWordsDiv" style="overflow: auto;"></div>
             </div>
         </div>
-    </div>
 
-    <div th:if="${!canDraw}" class="row" style="text-align:center">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            <div th:if="${error!=null}" style="text-align:center; margin-top:1%"
-                class="alert alert-danger alert-dismissible">
-                <h4 class="error" th:text="${error}">Error message</h4>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
 
-            <div id="imageDiv" style="margin-top:2%"></div>
+        <hr class="rounded">
 
-            <hr class="rounded">
-
-            <div style="display: flex;justify-content: center;margin-top:1%;" id="lettersDiv">
-                <table th:if="${game!=null}" style="margin-top:1%;margin: 0 auto;text-align:center" class="center"
-                    th:width="${50*game.wordLetters.size + 'px'}">
-                    <tr>
-                        <td th:each="letter : ${game.wordLetters}" style="text-align:center;width:50px;">
-                            <h1 style="margin-left:1%;text-align:center;display:inline; align-self: center;"><span
-                                    class="badge badge-secondary" th:text="${letter}"></span></h1>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-
-            <form id="guessForm" th:if="${canPlay}">
-                <hr class="rounded">
-                <div class="form-group row">
-                    <label for="word" class="col-sm-2 col-form-label">Word</label>
-                    <div class="col-sm-8">
-                        <input type="text" id="word" style="width:100%" th:minLength="${game.wordLetters.size}"
-                            th:maxLength="${game.wordLetters.size}">
-                    </div>
-                    <button type="button" onclick="guess()" class="btn btn-primary">Guess</button>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div style="display: flex;justify-content: center;margin-top:1%;" id="lettersDiv">
+                    <table th:if="${game!=null}" style="margin-top:1%;margin: 0 auto;text-align:center" class="center"
+                        th:width="${50*game.wordLetters.size + 'px'}">
+                        <tr>
+                            <td th:each="letter : ${game.wordLetters}" style="text-align:center;width:50px;">
+                                <h1 style="margin-left:1%;text-align:center;display:inline; align-self: center;"><span
+                                        class="badge badge-secondary" th:text="${letter}"></span></h1>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-                <div class="row">
-                    <div class="alert alert-danger" id="error-alert" style="display:none;width:100%;height:50px;">
-                        <button type="button" class="close" data-dismiss="alert">x</button>
-                        <strong id="errorText"> </strong>
+            </div>
+            <div class="col-md-1"></div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <form id="guessForm" th:if="${canPlay}">
+                    <hr class="rounded">
+                    <div class="form-group row">
+                        <label for="word" class="col-sm-2 col-form-label">Word</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="word" style="width:100%" th:minLength="${game.wordLetters.size}"
+                                th:maxLength="${game.wordLetters.size}">
+                        </div>
+                        <button type="button" onclick="guess()" class="btn btn-primary">Guess</button>
                     </div>
-                </div>
-            </form>
-
+                    <div class="row">
+                        <div class="alert alert-danger" id="error-alert" style="display:none;width:100%;height:50px;">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            <strong id="errorText"> </strong>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-1"></div>
         </div>
-        <div class="col-md-1"></div>
-    </div>
-
-    <div class="row" th:style="${canDraw ? 'margin-top:550' : 'margin-top:1%'}">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            <hr class="rounded">
-            <div id="guessedWordsDiv" style="overflow: auto;height:300px"></div>
-        </div>
-        <div class="col-md-1"></div>
     </div>
 
 </body>

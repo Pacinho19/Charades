@@ -11,14 +11,13 @@ function initStomp() {
 
 function init() {
     initStomp();
-    initCanvas();
     subscribeCanvas();
 }
 
 function subscribeCanvas() {
     privateStompClient.connect({}, function (frame) {
-        if(document.getElementById('can')!=null) return;
-        
+        if (document.getElementById('page') != null) return;
+
         var gameId = document.getElementById('gameId').value;
         privateStompClient.subscribe('/game/' + gameId, function (result) {
             showImage(result.body);
@@ -27,12 +26,12 @@ function subscribeCanvas() {
 }
 
 function send() {
-    var canvas = document.getElementById('can');
+    var canvas = document.getElementById('canvas');
     var dataURL = canvas.toDataURL();
     var gameId = document.getElementById('gameId').value;
 
     if (canvasContent != dataURL) {
-        canvasContent =  dataURL;
+        canvasContent = dataURL;
         stompClient.send("/app/canvas", {},
             JSON.stringify({ 'canvas': dataURL, 'gameId': gameId }));
     }
