@@ -18,11 +18,19 @@ function subscribeCanvas() {
     privateStompClient.connect({}, function (frame) {
         if (document.getElementById('page') != null) return;
 
+        initGuessPanel();
+
         var gameId = document.getElementById('gameId').value;
         privateStompClient.subscribe('/game/' + gameId, function (result) {
             showImage(result.body);
         });
     });
+}
+
+function initGuessPanel(){
+    var guessedWordsDiv = document.getElementById('guessedWordsDiv');
+    guessedWordsDiv.style.maxHeight="400px";
+    guessedWordsDiv.style.overflowY="auto";
 }
 
 function send() {

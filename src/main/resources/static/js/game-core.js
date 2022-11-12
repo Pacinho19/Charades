@@ -73,7 +73,7 @@ function checkEndGame(endGame) {
 
 function disableCanvas() {
     clearInterval(sendInterval);
-    var canvas = document.getElementById('can');
+    var canvas = document.getElementById('canvas');
     var dataURL = canvas.toDataURL();
 
     var newCanvas = canvas.cloneNode(true);
@@ -87,8 +87,8 @@ function disableCanvas() {
     };
     image.src = dataURL;
 
-    document.getElementById('canvasDiv').appendChild(newCanvas);
-    document.getElementById('clr').remove();
+    document.getElementById('content').appendChild(newCanvas);
+    document.getElementById('palette-case').remove();
 }
 
 $(document).ready(function () {

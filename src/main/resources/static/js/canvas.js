@@ -17,7 +17,7 @@ function newCanvas() {
     var content = document.getElementById("content");
     content.style.height = window.innerHeight - 90;
     content.style.width = window.innerWidth - 300;
-    var canvas = '<canvas id="canvas" width="' + (window.innerWidth - 300) + '" height="' + (window.innerHeight-90) + '"></canvas><div id="guessedWordsDiv" style="text-align:center;width:300px"></div>';
+    var canvas = '<canvas id="canvas" width="' + (window.innerWidth - 300) + '" height="' + (window.innerHeight - 90) + 'px"></canvas><div id="guessedWordsDiv" style="text-align:center;width:300px;overflow-y:auto;max-height:' + (window.innerHeight - 90) + 'px"></div>';
     content.innerHTML = canvas;
 
     // setup canvas
@@ -119,3 +119,7 @@ var canvas, ctx, flag = false,
 var x = "black",
     y = 2;
 
+function erase() {
+    var caanvas = document.getElementById("canvas");
+    ctx.clearRect(0, 0, caanvas.width, caanvas.height);
+}
